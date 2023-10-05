@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// chat model to display recent chats o lhs
 const chatModel = mongoose.Schema(
   {
     chatName: { type: String, trim: true },

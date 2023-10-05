@@ -2,11 +2,14 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        open: ["Open Sans", "sans-serif"],
+      },
+    },
   },
   plugins: [],
   paths: {
     "@/*": ["./src/*"],
   },
 };
-

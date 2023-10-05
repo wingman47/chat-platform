@@ -2,6 +2,7 @@ import * as React from "react";
 import { Container, chakra, Stack, Text, Button, Box } from "@chakra-ui/react";
 import { FaGithub } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { Blur } from "../pages/RegisterPage";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const HeroSection = () => {
             size="lg"
             height="3.5rem"
             fontSize="1.2rem"
-            onClick={() => navigate('/login')}
+            onClick={() => navigate("/register")}
           >
             Get Started
           </Button>
@@ -70,6 +71,12 @@ const HeroSection = () => {
           </Button>
         </Stack>
       </Stack>
+      <Blur
+        position={"absolute"}
+        top={-10}
+        left={-10}
+        style={{ filter: "blur(70px)" }}
+      />
     </Container>
   );
 };

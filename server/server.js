@@ -2,26 +2,53 @@ import express from "express";
 import { chats } from "./data/data.js";
 import dotenv from "dotenv";
 import cors from "cors";
-dotenv.config();
+import connectDB from "./config/db.js";
+import session from "express-session";
+import MongoDBStoreFactory from "connect-mongodb-session";
+import mongoose from "mongoose";
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+dotenv.config();
+
+/* ---------------------- EXPRESS SESSION WITH MONGODB ---------------------- */
+
+const MongoDBStore = MongoDBStoreFactory(session);
+const MONGODB_URI = process.env.MONGO_URL;
+const store = new MongoDBStore({
+  uri: MONGODB_URI,
+  collection: "sessions",
+});
+
+app.use(
+  session({
+    secret: "secretkey!",
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24, // 24 hours
+    },
+    resave: true,
+    saveUninitialized: false,
+    store: store,
+  })
+);
+
+mongoose.connect(MONGODB_URI).catch((err) => {
+  console.log(err);
+});
+
+/* -------------------------------------------------------------------------- */
+
+connectDB();
 
 app.get("/", (req, res) => {
   res.send("api is runnning");
 });
 
-app.get("/api/chat", (req, res) => {
-  res.send(chats);
-});
+app.use('/api/user', userRoutes)
 
-app.get("/api/chat/:id", (req, res) => {
-  const { id } = req.params;
-  const chat = chats.find((c) => c._id === id);
-  res.send(chat);
-});
 
 const PORT = process.env.PORT || 5001;
-
 app.listen(PORT, console.log(`server started at ${PORT}`));

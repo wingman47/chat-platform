@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // chat model to display recent chats o lhs
-const chatModel = mongoose.Schema(
+const chatModel = new mongoose.Schema(
   {
     chatName: { type: String, trim: true },
     isGroup: { type: Boolean, dfault: false },
@@ -29,4 +29,4 @@ const chatModel = mongoose.Schema(
 
 const Chat = mongoose.model("Chat", chatModel);
 
-module.exports = Chat
+export default Chat;

@@ -22,23 +22,18 @@ import Footer from "../scenes/Footer";
 const avatars = [
   {
     name: "G",
-    url: "https://bit.ly/ryan-florence",
   },
   {
     name: "R",
-    url: "https://bit.ly/sage-adebayo",
   },
   {
     name: "O",
-    url: "https://bit.ly/kent-c-dodds",
   },
   {
     name: "U",
-    url: "https://bit.ly/prosper-baba",
   },
   {
     name: "P",
-    url: "https://bit.ly/code-beast",
   },
 ];
 
@@ -96,7 +91,6 @@ const RegisterPage = () => {
                 <Avatar
                   key={avatar.name}
                   name={avatar.name}
-                  src={avatar.url}
                   // eslint-disable-next-line react-hooks/rules-of-hooks
                   size={useBreakpointValue({ base: "md", md: "lg" })}
                   position={"relative"}

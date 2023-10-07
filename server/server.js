@@ -49,6 +49,22 @@ app.get("/", (req, res) => {
 
 app.use('/api/user', userRoutes)
 
-
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, console.log(`server started at ${PORT}`));
+
+const gracefulShutdown = () => {
+  console.log('Shutting down gracefully...');
+  store.clear((err) => {
+    if (err) {
+      console.error('Error clearing sessions:', err);
+    } else {
+      console.log('All sessions cleared.');
+    }
+    server.close(() => {
+      console.log('Server closed.');
+      process.exit(0);
+    });
+  });
+};
+
+process.on('SIGINT', gracefulShutdown);

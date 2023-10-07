@@ -38,7 +38,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-export const login = async (req, res) => {
+export const authUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });

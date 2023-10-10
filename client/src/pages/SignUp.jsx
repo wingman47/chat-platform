@@ -7,6 +7,7 @@ import {
   InputRightElement,
   InputLeftElement,
   FormHelperText,
+  Box
 } from "@chakra-ui/react";
 import { useState } from "react";
 
@@ -14,14 +15,36 @@ const SignUp = () => {
   const [show, setShow] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", e.target.name.value);
-    formData.append("email", e.target.email.value);
-    formData.append("password", e.target.password.value);
+    const formData = {
+      name: e.target.name.value,
+      email: e.target.email.value,
+      password: e.target.password.value,
+    };
+    try {
+      const response = await fetch("http://localhost:5000/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+        }),
+      });
+      const data = await response.json();
+      console.log("signup data ", data);
+      if (response.ok) {
+        alert("Signup Successful");
+        // navigate("/home");
+      } else {
+        alert("INVALID CREDENTIALS");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
-    <FormControl mt={10} onSubmit={handleSubmit}>
+    <Box as={"form"} mt={10} onSubmit={handleSubmit}>
       <Stack spacing={4}>
         <InputGroup>
           <InputLeftElement pointerEvents="none" width={5} ml={3}>
@@ -135,10 +158,11 @@ const SignUp = () => {
           bgGradient: "linear(to-r, red.400,pink.400)",
           boxShadow: "xl",
         }}
+        type="submit"
       >
         S I G N U P
       </Button>
-    </FormControl>
+    </Box>
   );
 };
 

@@ -1,10 +1,52 @@
-import { Stack, Input, Button, Box, InputGroup, InputLeftElement, InputRightElement } from "@chakra-ui/react";
+import {
+  Stack,
+  Input,
+  Button,
+  Box,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+} from "@chakra-ui/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 const SignIn = () => {
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = {
+      email: e.target.email.value,
+      password: e.target.password.value,
+    };
+    try {
+      const response = await fetch("http://localhost:5000/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+        }),
+      });
+      const data = await response.json();
+      console.log("login data ", data);
+
+      if (response.ok) {
+        alert("Login Successful");
+        // navigate("/home");
+      } else {
+        alert("INVALID CREDENTIALS");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <Box as={"form"} mt={10}>
+    <Box as={"form"} mt={10} onSubmit={handleSubmit}>
       <Stack spacing={4}>
         <InputGroup>
           <InputLeftElement pointerEvents="none" width={5} ml={3}>
@@ -76,6 +118,7 @@ const SignIn = () => {
           bgGradient: "linear(to-r, red.400,pink.400)",
           boxShadow: "xl",
         }}
+        type="submit"
       >
         L O G I N
       </Button>

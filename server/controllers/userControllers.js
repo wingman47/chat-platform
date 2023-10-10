@@ -50,7 +50,7 @@ export const authUser = async (req, res) => {
     // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     delete user.password;
     console.log(user);
-    const userUUID = uuidv4();;
+    const userUUID = uuidv4();
     req.session.userid = userUUID;
     res.status(200).json({ user });
   } catch (error) {

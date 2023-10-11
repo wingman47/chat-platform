@@ -1,8 +1,35 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/userModel.js";
-import generateToken from "../config/generateToken.js";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
+import mongoose from "mongoose";
+
+const { ObjectId } = mongoose.Types;
+
+export const allUsers = asyncHandler(async (req, res) => {
+  try {
+    const keyword = req.query.search
+      ? {
+          $or: [
+            // i: case insensitive
+            { name: { $regex: req.query.search, $options: "i" } },
+            { email: { $regex: req.query.search, $options: "i" } },
+          ],
+        }
+      : {};
+    // find users except the current user
+    const userIdObject = new ObjectId(req.session.user._id);
+    console.log(userIdObject);
+    const filter = {
+      _id: { $ne: userIdObject },
+      ...keyword,
+    };
+    const users = await User.find(filter);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(404).json({ error: err.message });
+  }
+});
 
 export const registerUser = asyncHandler(async (req, res) => {
   try {
@@ -31,6 +58,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     });
     const userUUID = uuidv4();
     req.session.userid = userUUID;
+    req.session.user = newUser;
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
   } catch (err) {
@@ -52,8 +80,13 @@ export const authUser = async (req, res) => {
     console.log(user);
     const userUUID = uuidv4();
     req.session.userid = userUUID;
+    req.session.user = user;
     res.status(200).json({ user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+// using query
+// /api/user?search=arpit
+// in params we do /:id, params is different from query

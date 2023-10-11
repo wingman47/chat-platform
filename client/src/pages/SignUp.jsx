@@ -10,6 +10,7 @@ import {
   Box
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { setLogin } from "../state/state";
 
 const SignUp = () => {
   const [show, setShow] = useState(false);
@@ -34,7 +35,11 @@ const SignUp = () => {
       console.log("signup data ", data);
       if (response.ok) {
         alert("Signup Successful");
-        // navigate("/home");
+        dispatch(
+          setLogin({
+            user: data.user,
+          })
+        );
       } else {
         alert("INVALID CREDENTIALS");
       }

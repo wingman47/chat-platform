@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const chatModel = new mongoose.Schema(
   {
     chatName: { type: String, trim: true },
-    isGroup: { type: Boolean, dfault: false },
+    isGroup: { type: Boolean, default: false },
     users: [
       {
         // each user in the array is an objectId values which references to

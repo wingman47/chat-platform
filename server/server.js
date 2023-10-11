@@ -7,6 +7,7 @@ import session from "express-session";
 import MongoDBStoreFactory from "connect-mongodb-session";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js"
 
 const app = express();
 app.use(cors());
@@ -48,6 +49,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/user', userRoutes)
+app.use('/api/chat', chatRoutes)
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, console.log(`server started at ${PORT}`));

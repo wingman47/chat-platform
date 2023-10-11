@@ -10,11 +10,12 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { setLogin } from "../state/state";
 
 const SignIn = () => {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
@@ -36,7 +37,12 @@ const SignIn = () => {
 
       if (response.ok) {
         alert("Login Successful");
-        // navigate("/home");
+        dispatch(
+          setLogin({
+            user: data.user,
+          })
+        );
+        navigate("/chats");
       } else {
         alert("INVALID CREDENTIALS");
       }

@@ -3,6 +3,7 @@ import "./App.css";
 import LandingPage from "./pages/LandingPage";
 import ChatPage from "./pages/ChatPage";
 import RegisterPage from "./pages/RegisterPage";
+import UI from "./pages/UI";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/chats" element={<ChatPage />} />
+          <Route path="/ui" element={<UI />} />
         </Routes>
       </BrowserRouter>
     </div>

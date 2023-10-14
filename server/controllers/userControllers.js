@@ -87,6 +87,15 @@ export const authUser = async (req, res) => {
   }
 };
 
+export const logoutUser = () => {
+  try {
+    req.session.destroy;
+    console.log("logged out");
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 // using query
 // /api/user?search=arpit
 // in params we do /:id, params is different from query

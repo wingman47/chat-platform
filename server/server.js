@@ -10,7 +10,12 @@ import userRoutes from "./routes/userRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js"
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 dotenv.config();
@@ -43,10 +48,6 @@ mongoose.connect(MONGODB_URI).catch((err) => {
 /* -------------------------------------------------------------------------- */
 
 connectDB();
-
-app.get("/", (req, res) => {
-  res.send("api is runnning");
-});
 
 app.use('/api/user', userRoutes)
 app.use('/api/chat', chatRoutes)

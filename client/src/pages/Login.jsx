@@ -32,6 +32,7 @@ const SignIn = () => {
         body: JSON.stringify({
           ...formData,
         }),
+        credentials: "include"
       });
       const data = await response.json();
       console.log("login data ", data);

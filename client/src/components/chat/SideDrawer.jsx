@@ -20,6 +20,7 @@ import { FiBell, FiChevronDown } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import ProfileModal from "./ProfileModal";
 import { useDispatch } from "react-redux";
+import { setLogout } from "../../state/state";
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -29,8 +30,23 @@ const SideDrawer = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  const logoutHandler = () => {
-    
+  const logoutHandler = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/user/logout", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(response.ok);
+      if (response.ok) {
+        dispatch(setLogout());
+        alert("LOGGED OUT");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -62,7 +78,7 @@ const SideDrawer = () => {
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize="2xl">Tree House</Text>
+        {/* <Text fontSize="2xl">Tree House</Text> */}
         <div>
           <HStack spacing={{ base: "0", md: "6" }}>
             {/* Bell Icon */}
@@ -106,7 +122,7 @@ const SideDrawer = () => {
                   <ProfileModal user={user}>
                     <MenuItem>My Profile</MenuItem>{" "}
                   </ProfileModal>
-                  <MenuItem>Log out</MenuItem>
+                  <MenuItem onClick={logoutHandler}>Log out</MenuItem>
                 </MenuList>
               </Menu>
             </Flex>

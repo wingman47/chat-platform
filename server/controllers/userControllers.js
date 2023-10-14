@@ -79,7 +79,7 @@ export const authUser = async (req, res) => {
     delete user.password;
     console.log(user);
     const userUUID = uuidv4();
-    req.session.userid = userUUID;
+    req.session.userid = userUUID; 
     req.session.user = user;
     res.status(200).json({ user });
   } catch (error) {
@@ -87,10 +87,16 @@ export const authUser = async (req, res) => {
   }
 };
 
-export const logoutUser = () => {
+export const logoutUser = (req, res) => {
   try {
-    req.session.destroy;
-    console.log("logged out");
+    res.clearCookie("connect.sid");
+    req.session.destroy((err) => {
+      if (err) {
+        res.status(500).json({ error: err.message });
+      } else {
+        res.status(200).send("Logged out");
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

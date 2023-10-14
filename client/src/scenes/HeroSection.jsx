@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Container, chakra, Stack, Text, Button, Box } from "@chakra-ui/react";
 import { FaGithub } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, redirect, Link } from "react-router-dom";
 import { Blur } from "../pages/RegisterPage";
 
 const HeroSection = () => {
@@ -67,7 +67,12 @@ const HeroSection = () => {
             height="3.5rem"
             fontSize="1.2rem"
           >
-            Github
+            <Link
+              to="https://github.com/wingman47/chat-platform"
+
+            >
+              Github
+            </Link>
           </Button>
         </Stack>
       </Stack>

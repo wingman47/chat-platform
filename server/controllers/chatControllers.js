@@ -6,51 +6,52 @@ import mongoose from "mongoose";
 const { ObjectId } = mongoose.Types;
 
 export const accessChat = asyncHandler(async (req, res) => {
-  const { userId } = req.body;
-  console.log(userId);
-  if (!userId) {
-    console.log("UserId param not sent with request");
-    return res.sendStatus(400);
-  }
-  const userSession = new ObjectId(req.session.user._id);
-  const user = userSession.toString();
-  console.log(user);
-  const isChat = await Chat.find({
-    isGroupChat: false,
-    $and: [
-      { users: { $elemMatch: { $eq: user } } },
-      { users: { $elemMatch: { $eq: userId } } },
-    ],
-  })
-    .populate({
-      path: "users",
-      select: "-password",
-    })
-    .populate({
-      path: "latestMessage.sender",
-      select: "name pic email",
-    });
-
-  if (isChat) {
-    res.send(isChat);
-  } else {
-    var chatData = {
-      chatName: "sender",
+  try {
+    const { userId } = req.body;
+    console.log(userId);
+    if (!userId) {
+      console.log("UserId param not sent with request");
+      return res.sendStatus(400);
+    }
+    const userSession = new ObjectId(req.session.user._id);
+    const user = userSession.toString();
+    console.log(user);
+    const isChat = await Chat.find({
       isGroupChat: false,
-      users: [user, userId],
-    };
-
-    try {
+      $and: [
+        { users: { $elemMatch: { $eq: user } } },
+        { users: { $elemMatch: { $eq: userId } } },
+      ],
+    })
+      .populate({
+        path: "users",
+        select: "-password",
+      })
+      .populate({
+        path: "latestMessage.sender",
+        select: "name pic email",
+      });
+    if (isChat.length > 0) {
+      const data = isChat;
+      console.log("isChat: ", isChat);
+      res.status(200).json(data);
+    } else {
+      let chatData = {
+        chatName: "sender",
+        isGroupChat: false,
+        users: [user, userId],
+      };
       const createdChat = await Chat.create(chatData);
-      const FullChat = await Chat.findOne({ _id: createdChat._id }).populate(
+      const data = await Chat.findOne({ _id: createdChat._id }).populate(
         "users",
         "-password"
       );
-      res.status(200).json(FullChat);
-    } catch (error) {
-      res.status(400);
-      throw new Error(error.message);
+      console.log("createdChat: ", createdChat);
+      res.status(200).json([data]);
     }
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
   }
 });
 
@@ -68,6 +69,7 @@ export const fetchChats = asyncHandler(async (req, res) => {
           path: "latestMessage.sender",
           select: "name pic email",
         });
+        console.log(results);
         res.status(200).send(results);
       });
   } catch (error) {
@@ -180,4 +182,3 @@ export const removeFromGroup = asyncHandler(async (req, res) => {
     res.json(removed);
   }
 });
-

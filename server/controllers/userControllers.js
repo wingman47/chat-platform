@@ -18,6 +18,7 @@ export const allUsers = asyncHandler(async (req, res) => {
         }
       : {};
     // find users except the current user
+    // error - gives all the users
     const userIdObject = new ObjectId(req.session.user._id);
     console.log(userIdObject);
     const filter = {

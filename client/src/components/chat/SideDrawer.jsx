@@ -32,7 +32,7 @@ import { Spinner } from "@chakra-ui/spinner";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "./ChatLoading";
 import UserListItem from "../user/UserListItem";
-import { setSelectedChat } from "../../state/chatSlice";
+import { setSelectedChat, setChats } from "../../state/chatSlice";
 
 // import NotificationBadge from "react-notification-badge";
 
@@ -42,6 +42,7 @@ const SideDrawer = () => {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
   const user = useSelector((state) => state.auth.user);
+  const chats = useSelector((state) => state.chat.chats);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -132,6 +133,7 @@ const SideDrawer = () => {
   };
 
   const accessChat = async (userId) => {
+    console.log("userid: ", userId);
     try {
       setLoadingChat(true);
       const res = await fetch(`http://localhost:5000/api/chat`, {
@@ -145,11 +147,15 @@ const SideDrawer = () => {
         }),
       });
       if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        console.log("chats before: ", chats);
+        console.log("type: ", typeof chats);
+        dispatch(setChats({ chats: data[0] }));
+        console.log("chats: ", chats);
         dispatch(setSelectedChat(data));
         setLoadingChat(false);
-        const data = await res.json();
-
-        console.log(data);
+        onClose();
       }
     } catch (error) {
       console.log(error);
@@ -193,7 +199,7 @@ const SideDrawer = () => {
             </Text>
           </Button>
         </Tooltip>
-        {/* <Text fontSize="2xl">Tree House</Text> */}
+        <Text fontSize="2xl">Tree House</Text>
         <div>
           <HStack spacing={{ base: "0", md: "6" }}>
             {/* Bell Icon */}

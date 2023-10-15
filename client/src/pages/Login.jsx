@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setLogin } from "../state/state";
+import { setLogin } from "../state/authSlice";
 
 const SignIn = () => {
   const [show, setShow] = useState(false);
@@ -32,7 +32,7 @@ const SignIn = () => {
         body: JSON.stringify({
           ...formData,
         }),
-        credentials: "include"
+        credentials: "include",
       });
       const data = await response.json();
       console.log("login data ", data);

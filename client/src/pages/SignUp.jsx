@@ -7,10 +7,12 @@ import {
   InputRightElement,
   InputLeftElement,
   FormHelperText,
-  Box
+  Box,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { setLogin } from "../state/state";
+import { setLogin } from "../state/authSlice";
+import { setSelectedChat } from "../state/chatSlice";
+import { setChats } from "../state/chatSlice";
 
 const SignUp = () => {
   const [show, setShow] = useState(false);

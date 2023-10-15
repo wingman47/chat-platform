@@ -60,7 +60,7 @@ export const Blur = (props) => {
 };
 
 const RegisterPage = () => {
-  const [signUp, setSignUp] = useState(true);
+  const [signUp, setSignUp] = useState(false);
   return (
     <Box position={"relative"}>
       <Container

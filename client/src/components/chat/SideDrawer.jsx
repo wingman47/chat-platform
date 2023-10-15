@@ -2,9 +2,15 @@ import {
   Avatar,
   Box,
   Button,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   HStack,
   IconButton,
+  Input,
   Menu,
   MenuButton,
   MenuDivider,
@@ -15,20 +21,30 @@ import {
   VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useDisclosure } from "@chakra-ui/hooks";
 import React, { useState } from "react";
 import { FiBell, FiChevronDown } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import ProfileModal from "./ProfileModal";
 import { useDispatch } from "react-redux";
-import { setLogout } from "../../state/state";
+import { setLogout } from "../../state/authSlice";
+import { Spinner } from "@chakra-ui/spinner";
+import { useToast } from "@chakra-ui/toast";
+import ChatLoading from "./ChatLoading";
+import UserListItem from "../user/UserListItem";
+
+// import NotificationBadge from "react-notification-badge";
+
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   const logoutHandler = async () => {
     try {
@@ -49,6 +65,64 @@ const SideDrawer = () => {
     }
   };
 
+  const handleSearch = async () => {
+    if (!search) {
+      toast({
+        title: "Please Enter Something",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `http://localhost:5000/api/user?search=${search}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        setSearchResult(data);
+        setLoading(false);
+      }
+    } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: "Failed to Load the Search Results",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      console.log(error);
+    }
+  };
+
+  const accessChat = async (userId) => {
+    try {
+      setLoadingChat(true);
+      const res = await fetch(`http://localhost:5000/api/chat`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+        }),
+      });
+    } catch (error) {}
+  };
+
   return (
     <>
       <Box
@@ -61,7 +135,7 @@ const SideDrawer = () => {
         borderWidth="5px"
       >
         <Tooltip label="Search Users" hasArrow placement="bottom-end">
-          <Button variant={"ghost"}>
+          <Button variant={"ghost"} onClick={onOpen}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -129,6 +203,35 @@ const SideDrawer = () => {
           </HStack>
         </div>
       </Box>
+      <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
+          <DrawerBody>
+            <Box display="flex" pb={2}>
+              <Input
+                placeholder="Search by name or email"
+                mr={2}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <Button onClick={handleSearch}>Go</Button>
+            </Box>
+            {loading ? (
+              <ChatLoading />
+            ) : (
+              searchResult?.map((eachUser) => (
+                <UserListItem
+                  key={eachUser._id}
+                  user={eachUser}
+                  handleFunction={() => accessChat(eachUser._id)}
+                />
+              ))
+            )}
+            {loadingChat && <Spinner ml="auto" d="flex" />}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

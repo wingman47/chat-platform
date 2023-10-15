@@ -25,9 +25,9 @@ export const allUsers = asyncHandler(async (req, res) => {
       ...keyword,
     };
     const users = await User.find(filter);
-    res.status(200).json(users);
+    res.send(users);
   } catch (error) {
-    res.status(404).json({ error: err.message });
+    res.status(404).json({ error: error.message });
   }
 });
 

@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import {
   persistStore,
   persistReducer,
@@ -12,7 +12,8 @@ import {
 import storage from "redux-persist/lib/storage";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "./App";
-import authReducer from "./state/state";
+import authReducer from "./state/authSlice";
+import chatReducer from "./state/chatSlice";
 import { ChakraProvider } from "@chakra-ui/react";
 import React from "react";
 import ReactDOM from "react-dom/client";
@@ -24,10 +25,15 @@ const persistConfig = {
   storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, authReducer);
+const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistedChatReducer = persistReducer(persistConfig, chatReducer);
+const rootReducer = combineReducers({
+  auth: persistedAuthReducer,
+  chat: persistedChatReducer,
+});
 
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -46,4 +52,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       </ChakraProvider>
     </PersistGate>
   </Provider>
-)
+);

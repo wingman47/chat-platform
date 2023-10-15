@@ -6,7 +6,7 @@ import MyChats from '../components/chat/MyChats';
 import ChatBox from '../components/chat/ChatBox';
 
 const ChatPage = () => {
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.auth.user);
   return (
     <div style={{ width: "100%" }}>
       <SideDrawer />

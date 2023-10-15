@@ -51,6 +51,7 @@ const SignUp = () => {
         body: JSON.stringify({
           ...formData,
         }),
+        credentials: "include",
       });
       const { savedUser } = await response.json();
       console.log("signup data ", savedUser);

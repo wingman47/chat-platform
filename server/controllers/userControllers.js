@@ -56,12 +56,14 @@ export const registerUser = asyncHandler(async (req, res) => {
       password: passwordHash,
       pic,
     });
+    const savedUser = await newUser.save();
+    delete savedUser.password;
     const userUUID = uuidv4();
     req.session.userid = userUUID;
-    req.session.user = newUser;
-    const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    req.session.user = savedUser;
+    res.status(201).json({ savedUser });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -79,7 +81,7 @@ export const authUser = async (req, res) => {
     delete user.password;
     console.log(user);
     const userUUID = uuidv4();
-    req.session.userid = userUUID; 
+    req.session.userid = userUUID;
     req.session.user = user;
     res.status(200).json({ user });
   } catch (error) {

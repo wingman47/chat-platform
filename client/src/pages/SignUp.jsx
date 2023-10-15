@@ -8,16 +8,35 @@ import {
   InputLeftElement,
   FormHelperText,
   Box,
+  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { setLogin } from "../state/authSlice";
-import { setSelectedChat } from "../state/chatSlice";
-import { setChats } from "../state/chatSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const user = useSelector((state) => state.auth.user);
   const [show, setShow] = useState(false);
+  const toast = useToast();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (
+      !e.target.email.value ||
+      !e.target.password.value ||
+      !e.target.name.value
+    ) {
+      toast({
+        title: "Enter All the Fields",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
     const formData = {
       name: e.target.name.value,
       email: e.target.email.value,
@@ -33,17 +52,31 @@ const SignUp = () => {
           ...formData,
         }),
       });
-      const data = await response.json();
-      console.log("signup data ", data);
+      const { savedUser } = await response.json();
+      console.log("signup data ", savedUser);
       if (response.ok) {
-        alert("Signup Successful");
+        toast({
+          title: "Account created.",
+          description: "Account Created Successfully.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
         dispatch(
           setLogin({
-            user: data.user,
+            user: savedUser,
           })
         );
+        navigate("/chats");
       } else {
-        alert("INVALID CREDENTIALS");
+        toast({
+          title: "User Already Exists",
+          description: "User Already Exists",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
       }
     } catch (error) {
       console.log(error);

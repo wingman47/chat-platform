@@ -32,9 +32,9 @@ import { Spinner } from "@chakra-ui/spinner";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "./ChatLoading";
 import UserListItem from "../user/UserListItem";
+import { setSelectedChat } from "../../state/chatSlice";
 
 // import NotificationBadge from "react-notification-badge";
-
 
 const SideDrawer = () => {
   const [search, setSearch] = useState("");
@@ -55,13 +55,37 @@ const SideDrawer = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.ok);
+      console.log(response);
       if (response.ok) {
         dispatch(setLogout());
-        alert("LOGGED OUT");
+        toast({
+          title: "Logout Successful",
+          description: "Logout Successful",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      } else {
+        toast({
+          title: "Failed to Logout",
+          description: "Failed to Logout",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
       }
     } catch (error) {
       console.error("Error during logout:", error);
+      toast({
+        title: "Failed to Logout",
+        description: "Failed to Logout",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
     }
   };
 
@@ -111,7 +135,7 @@ const SideDrawer = () => {
     try {
       setLoadingChat(true);
       const res = await fetch(`http://localhost:5000/api/chat`, {
-        method: "GET",
+        method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +144,24 @@ const SideDrawer = () => {
           userId,
         }),
       });
-    } catch (error) {}
+      if (res.ok) {
+        dispatch(setSelectedChat(data));
+        setLoadingChat(false);
+        const data = await res.json();
+
+        console.log(data);
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error Occured!",
+        description: "Failed to Fetch",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+    }
   };
 
   return (

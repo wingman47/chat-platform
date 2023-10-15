@@ -10,15 +10,26 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setLogin } from "../state/authSlice";
 
 const SignIn = () => {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const toast = useToast();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!e.target.email.value || !e.target.password.value) {
+      toast({
+        title: "Enter All the Fields",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
     const formData = {
       email: e.target.email.value,
       password: e.target.password.value,
@@ -38,7 +49,14 @@ const SignIn = () => {
       console.log("login data ", data);
 
       if (response.ok) {
-        alert("Login Successful");
+        toast({
+          title: "Login Successful",
+          description: "Login Successful",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
         dispatch(
           setLogin({
             user: data.user,
@@ -46,9 +64,24 @@ const SignIn = () => {
         );
         navigate("/chats");
       } else {
-        alert("INVALID CREDENTIALS");
+        toast({
+          title: "Invalid Credentials",
+          description: "Invalid Credentials",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
       }
     } catch (error) {
+      toast({
+        title: "Error Occured!",
+        description: "Failed to Create Account",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
       console.log(error);
     }
   };

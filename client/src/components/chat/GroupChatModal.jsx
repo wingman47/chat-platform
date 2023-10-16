@@ -13,11 +13,12 @@ import {
   useToast,
   Box,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useState } from "react";
-import { ChatState } from "../../Context/ChatProvider";
-import UserBadgeItem from "../userAvatar/UserBadgeItem";
-import UserListItem from "../userAvatar/UserListItem";
+import UserBadgeItem from "../user/UserBadgeItem";
+import { setChats } from "../../state/chatSlice";
+import { useDispatch, useSelector } from "react-redux";
+import UserListItem from "../user/UserListItem";
+import { Spinner } from "@chakra-ui/spinner";
 
 const GroupChatModal = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,9 +28,10 @@ const GroupChatModal = ({ children }) => {
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const dispatch = useDispatch();
 
-  const { user, chats, setChats } = ChatState();
-
+  const user = useSelector((state) => state.auth.user);
+  const chats = useSelector((state) => state.chat.chats);
   const handleGroup = (userToAdd) => {
     if (selectedUsers.includes(userToAdd)) {
       toast({
@@ -53,13 +55,18 @@ const GroupChatModal = ({ children }) => {
 
     try {
       setLoading(true);
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      };
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
-      console.log(data);
+      const response = await fetch(
+        `http://localhost:5000/api/user?search=${search}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log("handleSearch data: ", data);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -91,28 +98,41 @@ const GroupChatModal = ({ children }) => {
     }
 
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
+      const send = {
+        name: groupChatName,
+        users: JSON.stringify(selectedUsers.map((u) => u._id)),
       };
-      const { data } = await axios.post(
-        `/api/chat/group`,
-        {
-          name: groupChatName,
-          users: JSON.stringify(selectedUsers.map((u) => u._id)),
+      const response = await fetch("http://localhost:5000/api/chat/group", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-        config
-      );
-      setChats([data, ...chats]);
-      onClose();
-      toast({
-        title: "New Group Chat Created!",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
+        body: JSON.stringify(send),
       });
+      if (response.ok) {
+        const data = await response.json();
+        console.log("data: ", data);
+        dispatch(setChats({ chats: data[0] }));
+        console.log("handleSubmit chats: ", chats);
+        onClose();
+        toast({
+          title: "New Group Chat Created!",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      } else {
+        toast({
+          title: "Failed to Create the Chat!",
+          description: "Failed to Create the Chat!",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+      }
     } catch (error) {
       toast({
         title: "Failed to Create the Chat!",
@@ -132,12 +152,7 @@ const GroupChatModal = ({ children }) => {
       <Modal onClose={onClose} isOpen={isOpen} isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader
-            fontSize="35px"
-            fontFamily="Work sans"
-            d="flex"
-            justifyContent="center"
-          >
+          <ModalHeader fontSize="35px" d="flex" justifyContent="center">
             Create Group Chat
           </ModalHeader>
           <ModalCloseButton />
@@ -151,7 +166,7 @@ const GroupChatModal = ({ children }) => {
             </FormControl>
             <FormControl>
               <Input
-                placeholder="Add Users eg: John, Piyush, Jane"
+                placeholder="Add Users eg: John, Doe, Jane"
                 mb={1}
                 onChange={(e) => handleSearch(e.target.value)}
               />
@@ -166,8 +181,7 @@ const GroupChatModal = ({ children }) => {
               ))}
             </Box>
             {loading ? (
-              // <ChatLoading />
-              <div>Loading...</div>
+              <Spinner d="flex" />
             ) : (
               searchResult
                 ?.slice(0, 4)

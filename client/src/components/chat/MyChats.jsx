@@ -13,6 +13,7 @@ import {
 import { AddIcon } from "@chakra-ui/icons";
 import ChatLoading from "./ChatLoading";
 import { getSender } from "../configs/chatLogic";
+import GroupChatModal from "./GroupChatModal";
 
 const MyChats = () => {
   const [loggedUser, setLoggedUser] = useState();
@@ -85,11 +86,11 @@ const MyChats = () => {
           alignItems="center"
         >
           My Chats
-          {/* <GroupChatModal> */}
-          <Button d="flex" fontSize={"17px"} rightIcon={<AddIcon />}>
-            New Group Chat
-          </Button>
-          {/* </GroupChatModal> */}
+          <GroupChatModal>
+            <Button d="flex" fontSize={"17px"} rightIcon={<AddIcon />}>
+              New Group Chat
+            </Button>
+          </GroupChatModal>
         </Flex>
         <Box
           d="flex"
@@ -105,7 +106,9 @@ const MyChats = () => {
             <Stack overflowY="scroll">
               {chats.map((chat) => (
                 <Box
-                  onClick={() => dispatch(setSelectedChat(chat))}
+                  onClick={() =>
+                    dispatch(setSelectedChat({ selectedChat: chat }))
+                  }
                   cursor="pointer"
                   bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
                   color={selectedChat === chat ? "white" : "black"}

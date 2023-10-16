@@ -15,7 +15,7 @@ export const chatSlice = createSlice({
     setChats: (state, action) => {
       const newData = action.payload.chats;
 
-      // // Check if a chat with the same _id exists in the current state
+      // Check if a chat with the same _id exists in the current state
       const duplicateChatIndex = state.chats.findIndex(
         (c) => c._id === newData._id
       ); 

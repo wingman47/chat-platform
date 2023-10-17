@@ -15,7 +15,7 @@ import ChatLoading from "./ChatLoading";
 import { getSender } from "../configs/chatLogic";
 import GroupChatModal from "./GroupChatModal";
 
-const MyChats = () => {
+const MyChats = ({ fetchAgain }) => {
   const [loggedUser, setLoggedUser] = useState();
   const user = useSelector((state) => state.auth.user);
   const chats = useSelector((state) => state.chat.chats);
@@ -61,8 +61,7 @@ const MyChats = () => {
   useEffect(() => {
     setLoggedUser(user);
     fetchChats();
-    // eslint-disable-next-line
-  }, []);
+  }, [fetchAgain]);
 
   return (
     <>
